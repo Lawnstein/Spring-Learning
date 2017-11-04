@@ -1,0 +1,110 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+	<bean id="oracleDS" class="com.atomikos.jdbc.AtomikosDataSourceBean"
+		init-method="init" destroy-method="close">
+		<description>oracle xa datasource</description>
+		<property name="uniqueResourceName"><!-- 名称可以任意定义 -->
+			<value>oracle_ds</value>
+		</property>
+		<property name="xaDataSourceClassName"><!-- oracle驱动必须实现XA接口 -->
+			<value>oracle.jdbc.xa.client.OracleXADataSource</value>
+		</property>
+		<property name="xaProperties">
+			<props><!--数据库的url，用户名以及密码 -->
+				<prop key="user">${dev.db.user}</prop>
+				<prop key="password">${dev.db.password}</prop>
+				<prop key="URL">${dev.db.url}</prop>
+			</props>
+		</property>
+		<property name="testQuery">
+			<value>select 1 from dual</value> <!-- 尽力加上，不然会出现告警 -->
+		</property>
+	</bean>
+	<bean id="oracleDS2" class="com.atomikos.jdbc.AtomikosDataSourceBean"
+		init-method="init" destroy-method="close">
+		<description>oracle xa datasource</description>
+		<property name="uniqueResourceName">
+			<value>oracle_ds1</value>
+		</property>
+		<property name="xaDataSourceClassName">
+			<value>oracle.jdbc.xa.client.OracleXADataSource</value>
+		</property>
+		<property name="xaProperties">
+			<props>
+				<prop key="user">${qa.db.user}</prop>
+				<prop key="password">${qa.db.password}</prop>
+				<prop key="URL">${qa.db.url}</prop>
+			</props>
+		</property>
+		<property name="testQuery">
+			<value>select 1 from dual</value> <!-- 尽力加上，不然会出现告警 -->
+		</property>
+	</bean>
+	<!-- 使用正常事物测试使用<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" 
+		destroy-method="close"> <property name="driverClass" value="oracle.jdbc.driver.OracleDriver"></property> 
+		<property name="jdbcUrl" value="${dev.db.url}"></property> <property name="user" 
+		value="${dev.db.user}"></property> <property name="password" value="${dev.db.password}"></property> 
+		</bean> <bean id="dataSource1" class="com.mchange.v2.c3p0.ComboPooledDataSource" 
+		destroy-method="close"> <property name="driverClass" value="oracle.jdbc.driver.OracleDriver"></property> 
+		<property name="jdbcUrl" value="${qa.db.url}"></property> <property name="user" 
+		value="${qa.db.user}"></property> <property name="password" value="${qa.db.password}"></property> 
+		</bean> -->
+
+	<bean id="qasqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="oracleDS2" /><!-- oracleDS2 dataSource1 -->
+		<property name="mapperLocations" value="classpath:com/xy/dao/*.xml" />
+	</bean>
+
+	<bean id="devsqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="oracleDS" /><!-- oracleDS dataSource -->
+		<property name="mapperLocations" value="classpath:com/xy/daodev/*.xml" />
+	</bean>
+
+	<bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+		<description>UserTransactionImp</description>
+		<property name="transactionTimeout" value="300" />
+	</bean>
+
+	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
+		init-method="init" destroy-method="close">
+		<description>UserTransactionManager</description>
+		<property name="forceShutdown">
+			<value>true</value>
+		</property>
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.transaction.jta.JtaTransactionManager">
+		<description>JtaTransactionManager</description>
+		<property name="transactionManager">
+			<ref bean="atomikosTransactionManager" />
+		</property>
+		<property name="userTransaction">
+			<ref bean="atomikosUserTransaction" />
+		</property>
+		<property name="allowCustomIsolationLevels" value="true" /> <!-- 必须设置，否则程序出现异常 JtaTransactionManager does not support custom isolation 
+			levels by default -->
+	</bean>
+
+
+	<!-- 创建普通的事物管理器 -->
+	<!-- <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> 
+		<property name="dataSource" ref="dataSource1" /> </bean> -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.xy.dao" />
+		<property name="sqlSessionFactoryBeanName" value="qasqlSessionFactory" />
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.xy.daodev" />
+		<property name="sqlSessionFactoryBeanName" value="devsqlSessionFactory" />
+	</bean>
+
+
+</beans>

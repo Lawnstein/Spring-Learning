@@ -1,0 +1,30 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+	<bean id="userKeyGenerator" class="com.iceps.spring.cachable.service.MyKeyGenerator" />
+
+    <cache:annotation-driven key-generator="userKeyGenerator" cache-manager="ehcacheManager" />
+    
+    <bean id="ehcacheManagerFactory" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+         <property name="configLocation" value="classpath:ehcache.xml" />
+    </bean>
+    <bean id="ehcacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
+         <property name="cacheManager" ref="ehcacheManagerFactory" />
+    </bean>
+
+	<bean class="com.iceps.spring.cachable.service.UserService" />
+	
+	
+	<bean id="poolExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="2" />
+		<property name="maxPoolSize" value="4" />
+		<property name="queueCapacity" value="4" />
+		<property name="threadNamePrefix" value="POOLTH-" />
+	</bean>
+
+</beans>
