@@ -110,7 +110,7 @@ public abstract class BaseAction implements Runnable {
 
 			logger.info("{}, ThreadID={}, LoopA runed for {}/{} time(s).", Thread.currentThread().getName(), Thread.currentThread().getId(), i, loopA);
 
-			if (!randomSleep) {
+			if (randomSleep) {
 				try {
 					Thread.sleep(r.nextInt(10000));
 				} catch (InterruptedException e) {

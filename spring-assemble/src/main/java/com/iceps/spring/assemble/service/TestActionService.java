@@ -84,10 +84,10 @@ public class TestActionService {
 		logger.error("{} {} thread(s) will start ...", loggerName, tl.size());
 		for (Thread t : tl) {
 			t.start();
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-			}
+//			try {
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {
+//			}
 		}
 
 		logger.error("{} =============wait for all action process over===========", loggerName);
