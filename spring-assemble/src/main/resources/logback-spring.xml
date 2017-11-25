@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration dubug="false">
+<configuration dubug="true">
 	<springProperty scope="context" name="loging.path" source="logging.path" />
 	<springProperty scope="context" name="loging.level" source="loging.level" />
 	<springProperty scope="context" name="spring.application.name" source="spring.application.name" />
@@ -25,7 +25,7 @@
 		<file>${loging.path}/ERROR</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<fileNamePattern>${loging.path}/ERROR_%d{yyyyMMdd}_%i</fileNamePattern>
-			<maxFileSize>20MB</maxFileSize>
+			<maxFileSize>100MB</maxFileSize>
 			<maxHistory>100</maxHistory>
 		</rollingPolicy>
 		<encoder>
@@ -41,8 +41,8 @@
 		<rollingPolicy
 			class="ch.qos.logback.assemble.rolling.NamingAndSizeBasedRollingPolicy">
 			<fileNamePattern>${loging.path}/assemble_ring/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.%i.log</fileNamePattern>
-			<maxFileSize>500KB</maxFileSize>
-			<maxHistory>50</maxHistory>
+			<maxFileSize>100MB</maxFileSize>
+			<maxHistory>100</maxHistory>
 		</rollingPolicy>
 		<encoder>
 			<pattern>[%date][%thread][%-5level][%file,%method:%line] %msg%n</pattern>
@@ -56,8 +56,8 @@
 		<rollingPolicy
 			class="ch.qos.logback.assemble.rolling.NamingAndSizeBasedRollingPolicy">
 			<fileNamePattern>${loging.path}/assemble_queue/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.%i.log</fileNamePattern>
-			<maxFileSize>500KB</maxFileSize>
-			<maxHistory>50</maxHistory>
+			<maxFileSize>100MB</maxFileSize>
+			<maxHistory>100</maxHistory>
 		</rollingPolicy>
 		<encoder>
 			<pattern>[%date][%thread][%-5level][%file,%method:%line] %msg%n</pattern>
@@ -74,8 +74,8 @@
 				<file>${loging.path}/sift/${TRCODE}.0.log</file>
 				<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 					<fileNamePattern>${loging.path}/sift/${TRCODE}.%i.%d{yyyy-MM-dd}.log</fileNamePattern>
-					<maxFileSize>500KB</maxFileSize>
-					<maxHistory>50</maxHistory>
+					<maxFileSize>100MB</maxFileSize>
+					<maxHistory>100</maxHistory>
 				</rollingPolicy>
 				<encoder>
 					<pattern>[%date][%thread][%-5level][%file,%method:%line] %msg%n</pattern>

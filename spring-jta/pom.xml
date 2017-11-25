@@ -2,12 +2,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.iceps.cache</groupId>
-	<artifactId>spring-cachable</artifactId>
+	<groupId>com.iceps.springlearning</groupId>
+	<artifactId>spring-jta</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>spring-cachable</name>
+	<name>spring-jta</name>
 	<url>http://maven.apache.org</url>
 
 	<parent>

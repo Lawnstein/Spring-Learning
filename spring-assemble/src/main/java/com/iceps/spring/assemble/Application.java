@@ -34,8 +34,8 @@ public class Application {
 
 	public static void main(String[] args) {
 		applicationContext = SpringApplication.run(Application.class, args);
-
-		for (int i = 0; i < 1000; i++) {
+		int l = 1;
+		for (int i = 0; i < l; i++) {
 			testAssembleRing();
 			testAssembleQueue();
 			testSift();

@@ -55,26 +55,59 @@ public class Application {
 	}
 
 	private static void testPool1() {
-		ThreadPoolTaskExecutor pool = applicationContext.getBean(ThreadPoolTaskExecutor.class);
+		final ThreadPoolTaskExecutor pool = applicationContext.getBean(ThreadPoolTaskExecutor.class);
 		int size = pool.getMaxPoolSize();
 		for (int i = 0; i < 10; i++) {
 			if (pool.getMaxPoolSize() < i + 1) {
-				pool.setMaxPoolSize(i+1);
+				pool.setMaxPoolSize(i + 1);
 			}
 			pool.execute(new Runnable() {
 
 				@Override
 				public void run() {
-					
-					for (int j = 0; j < 100000; ) {
+
+					for (int j = 0; j < 10000;) {
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e) {
 						}
-						j+= 10;
+						j += 10;
+						
+//						if (j % 100 == 0)
+//							System.out.println(Thread.currentThread() + " " + j);
+						
+					}
+					
+					System.out.println(Thread.currentThread() + " run over, pool.activeCount=" + pool.getActiveCount() + ", pool.corePoolSize=" + pool.getCorePoolSize() + ", pool.maxPoolSize=" + pool.getMaxPoolSize());
+				}
+			});
+			
+			System.out.println(Thread.currentThread() + " ThreadPoolTaskExecutor-" + i + " started, pool.activeCount=" + pool.getActiveCount() + ", pool.corePoolSize=" + pool.getCorePoolSize() + ", pool.maxPoolSize=" + pool.getMaxPoolSize());
+//			pool.setMaxPoolSize(size);
+		}
+	}
+
+	private static void testPool2() {
+		ThreadPoolTaskExecutor pool = applicationContext.getBean(ThreadPoolTaskExecutor.class);
+		int size = pool.getMaxPoolSize();
+		for (int i = 0; i < 10; i++) {
+			if (pool.getMaxPoolSize() < i + 1) {
+				pool.setMaxPoolSize(i + 1);
+			}
+			pool.execute(new Runnable() {
+
+				@Override
+				public void run() {
+
+					for (int j = 0; j < 100000;) {
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e) {
+						}
+						j += 10;
 						if (j % 100 == 0)
 							System.out.println(Thread.currentThread() + " " + j);
-					}					
+					}
 				}
 			});
 			System.out.println("ThreadPoolTaskExecutor-" + i + " started.");
@@ -84,8 +117,15 @@ public class Application {
 
 	public static void main(String[] args) {
 		applicationContext = SpringApplication.run(Application.class, args);
-		testCache2();
-//		testPool1();
+		// testCache2();
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				testPool1();
+			}
+		}).start();
+		testPool1();
 	}
 
 }
