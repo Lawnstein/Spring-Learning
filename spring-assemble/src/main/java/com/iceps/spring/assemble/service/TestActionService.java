@@ -13,6 +13,10 @@ import com.iceps.spring.assemble.service.tran.T15001Action;
 import com.iceps.spring.assemble.service.tran.T15002Action;
 import com.iceps.spring.assemble.service.tran.T15003Action;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.joran.spi.JoranException;
+
 public class TestActionService {
 	private final static Logger logger = LoggerFactory.getLogger(TestActionService.class);
 	private CountDownLatch countDownLatch;
@@ -22,29 +26,75 @@ public class TestActionService {
 	public CountDownLatch getCountDownLatch() {
 		return countDownLatch;
 	}
+
 	public void setCountDownLatch(CountDownLatch countDownLatch) {
 		this.countDownLatch = countDownLatch;
 	}
+
 	public String getLoggerName() {
 		return loggerName;
 	}
+
 	public void setLoggerName(String loggerName) {
 		this.loggerName = loggerName;
 	}
+
 	public boolean isSift() {
 		return sift;
 	}
+
 	public void setSift(boolean sift) {
 		this.sift = sift;
 	}
+
 	public static Logger getLogger() {
 		return logger;
 	}
+
 	public void startThreads(boolean sift) {
 		this.sift = sift;
 		startThreads();
 	}
+
+	public void loggerContextReset() {
+
+		System.out.println("-=-=-= try Reset Logback loggerContext =-=-=- ");
+		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+		// 必须清空一下，否则之前加载的logger堆栈信息还保留着StatusPrinter.print会打印出之前的状态
+		loggerContext.getStatusManager().clear();
+		loggerContext.reset();
+
+		System.out.println("-=-=-=  Logback loggerContext , try to reload config =-=-=- ");
+		ContextInitializer ci = new ContextInitializer(loggerContext);
+		try {
+			ci.autoConfig();
+			System.out.println("-=-=-=  Logback loggerContext reload over =-=-=- ");
+		} catch (JoranException e) {
+			System.err.println("-=-=-= Reset Logback status Failed =-=-=- \n" + e);
+		}
+	}
+
+	public void startLoggerResetThreads() {
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+					}
+					loggerContextReset();
+				}
+				
+			}
+		}).start();
+		;
+	}
+
 	public void startThreads() {
+//		startLoggerResetThreads();
+		
 		int LOOPA = 10;
 		int LOOPB = 10000;
 		// int T15001N = 20;
@@ -84,10 +134,10 @@ public class TestActionService {
 		logger.error("{} {} thread(s) will start ...", loggerName, tl.size());
 		for (Thread t : tl) {
 			t.start();
-//			try {
-//				Thread.sleep(100);
-//			} catch (InterruptedException e) {
-//			}
+			// try {
+			// Thread.sleep(100);
+			// } catch (InterruptedException e) {
+			// }
 		}
 
 		logger.error("{} =============wait for all action process over===========", loggerName);

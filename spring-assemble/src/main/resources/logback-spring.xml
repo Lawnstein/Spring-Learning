@@ -40,8 +40,8 @@
 		<outputType>RingBuffer</outputType>
 		<rollingPolicy
 			class="ch.qos.logback.assemble.rolling.NamingAndSizeBasedRollingPolicy">
-			<fileNamePattern>${loging.path}/assemble_ring/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.%i.log</fileNamePattern>
-			<maxFileSize>100MB</maxFileSize>
+			<fileNamePattern>${loging.path}/assemble_ring/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.%i.log.zip</fileNamePattern>
+			<maxFileSize>5MB</maxFileSize>
 			<maxHistory>100</maxHistory>
 		</rollingPolicy>
 		<encoder>
@@ -55,8 +55,8 @@
 		<outputType>BlockQueue</outputType>
 		<rollingPolicy
 			class="ch.qos.logback.assemble.rolling.NamingAndSizeBasedRollingPolicy">
-			<fileNamePattern>${loging.path}/assemble_queue/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.%i.log</fileNamePattern>
-			<maxFileSize>100MB</maxFileSize>
+			<fileNamePattern>${loging.path}/assemble_queue/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.%i.log.gz</fileNamePattern>
+			<maxFileSize>10MB</maxFileSize>
 			<maxHistory>100</maxHistory>
 		</rollingPolicy>
 		<encoder>
@@ -74,7 +74,7 @@
 				<file>${loging.path}/sift/${TRCODE}.0.log</file>
 				<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 					<fileNamePattern>${loging.path}/sift/${TRCODE}.%i.%d{yyyy-MM-dd}.log</fileNamePattern>
-					<maxFileSize>100MB</maxFileSize>
+					<maxFileSize>10MB</maxFileSize>
 					<maxHistory>100</maxHistory>
 				</rollingPolicy>
 				<encoder>
