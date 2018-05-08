@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true" scan="false" scanPeriod="5 seconds">
+	<property name="APPID" value="myapp" />
+	<property name="RootLogLevel" value="DEBUG" />
+	<contextName>${APPID}</contextName>
+		
+	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%msg%n]</pattern>
+		</encoder>
+	</appender>
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		<file>${USER_HOME}/myApp.log</file>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="FILE" class="ch.qos.logback.assemble.AssembleAppender">
+		<file>logs/${APPID}/%d{yyyyMMdd}/myconfig.log</file>
+		<rollingPolicy class="ch.qos.logback.assemble.rolling.NamingAndSizeBasedRollingPolicy">		
+			<fileNamePattern>logs/${APPID}/%d{yyyyMMdd}/myconfig-%i.log.zip</fileNamePattern>
+			<maxFileSize>20MB</maxFileSize>
+			<!-- <maxHistory>100</maxHistory> -->
+		</rollingPolicy>
+		<encoder>
+			<immediateFlush>false</immediateFlush>
+			<pattern>[%date{HH:mm:ss.SSS}][%-5level][%logger{36}] ===== %msg%n</pattern>
+		</encoder>
+		
+	</appender>
+
+
+	<root level="${RootLogLevel}">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</root>
+
+</configuration>
