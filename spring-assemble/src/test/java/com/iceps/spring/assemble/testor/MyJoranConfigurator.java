@@ -62,7 +62,6 @@ public class MyJoranConfigurator {
 						reload();
 				} catch (IOException e) {
 				}
-				
 			}
 			
 		}
