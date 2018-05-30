@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iceps.spring.shardingjdbc2.mapper.CustMapper">
+	<resultMap id="BaseResultMap" type="com.iceps.spring.shardingjdbc2.model.Cust">
+		<id column="cust_id" property="custId" jdbcType="INTEGER" />
+		<result column="cust_name" property="custName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		cust_id, cust_name
+	</sql>
+	<insert id="insert" parameterType="com.iceps.spring.shardingjdbc2.model.User">
+		insert into t_cust (cust_id, cust_name)
+		values (#{custId,jdbcType=INTEGER},
+		#{custName,jdbcType=VARCHAR})
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.iceps.spring.shardingjdbc2.model.User">
+		update t_cust
+		set
+		cust_name = #{custName,jdbcType=VARCHAR}
+		where
+		cust_id = #{custId,jdbcType=INTEGER}
+	</update>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_cust
+		where
+		cust_id = #{custId,jdbcType=INTEGER}
+	</delete>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_cust
+		where
+		cust_id = #{custId,jdbcType=INTEGER}
+	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_cust
+	</select>
+</mapper>

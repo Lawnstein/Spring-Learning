@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/mvc
+                        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://mybatis.org/schema/mybatis-spring 
+                        http://mybatis.org/schema/mybatis-spring.xsd ">
+
+	<context:property-placeholder location="classpath*:application.properties"
+		ignore-unresolvable="true" />
+
+	<!-- 扫描com.app包下面的java文件，有Spring的相关注解的类，则把这些类注册为Spring的bean -->
+	<context:component-scan base-package="com.iceps.spring.shardingjdbc2.service" />
+	<!-- mybatis:scan会将com.app.mapper包里的所有接口当作mapper配置，之后可以自动引入mapper类 -->
+	<mybatis:scan base-package="com.iceps.spring.shardingjdbc2.mapper" />
+	
+	<bean id="dataSource" class="com.iceps.spring.shardingjdbc2.sharding.datasource.ShardingDataSource"  init-method="init" destroy-method="close">
+		<property name="source">
+			<bean class="com.alibaba.druid.pool.DruidDataSource">
+		
+				<!-- 数据库基本信息配置 -->
+				<property name="driverClassName" value="${jdbc.driver}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+		
+				<!-- 配置初始化大小、最小、最大 -->
+				<property name="initialSize" value="1" />
+				<property name="minIdle" value="1" />
+				<property name="maxActive" value="100" />
+		
+				<!-- 是否自动提交 -->
+				<property name="defaultAutoCommit" value="true" />
+		
+				<!-- 配置获取连接等待超时的时间(单位是毫秒) -->
+				<property name="maxWait" value="30000" />
+		
+				<!-- 打开PSCache，对支持游标的数据库性能提升巨大，并且指定每个连接上PSCache的大小 -->
+				<property name="poolPreparedStatements" value="true" />
+				<property name="maxPoolPreparedStatementPerConnectionSize"
+					value="200" />
+				<property name="maxOpenPreparedStatements" value="100" />
+		
+				<!-- 对于长时间不使用的连接强制关闭 -->
+				<property name="removeAbandoned" value="false" />
+				<property name="removeAbandonedTimeout" value="360000" />
+				<property name="logAbandoned" value="true" />
+				<property name="timeBetweenEvictionRunsMillis" value="30000" />
+				<property name="minEvictableIdleTimeMillis" value="360000000" />
+				<property name="maxEvictableIdleTimeMillis" value="360000000" />
+				<!-- <property name="validationQuery" value="select 1" /> <property name="validationQueryTimeout" value="3" /> -->
+				<property name="testWhileIdle" value="false" />
+				<property name="testOnBorrow" value="false" />
+				<property name="testOnReturn" value="false" />
+		
+				<!-- 配置监控统计拦截的filters -->
+				<!-- <property name="filters" value="stat,slf4j,wall" /> -->
+				<!-- <property name="proxyFilters"> <list> <ref bean="druidLogFilter" /> 
+				<ref bean="druidStatFilter" /> </list> </property> -->
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- mapper接口代理实现，自动扫描了所有的XxxxMapper.xml对应的mapper接口文件，这样就不用一个一个手动配置Mpper的映射了，只要Mapper接口类和Mapper映射文件对应起来就可以了。 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!--指定扫描整个包，多个包用英文","分隔符 -->
+		<property name="basePackage" value="com.iceps.spring.shardingjdbc2.mapper" />
+	</bean>
+
+	<!-- 配置Mybatis的文件 ，mapperLocations配置**Mapper.xml文件位置，configLocation配置mybatis-config文件位置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath:mapper/*.xml" />
+		<!--<property name="configLocation" value="classpath:mybatis-config.xml" 
+			/> -->
+		<property name="typeAliasesPackage" value="com.iceps.spring.shardingjdbc2.model" />
+<!-- 		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageInterceptor">
+					<property name="properties">
+						<value>
+							helperDialect=mysql
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property> -->
+	</bean>
+
+	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 启用支持annotation注解方式事务管理 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+
+</beans>

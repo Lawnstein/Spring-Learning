@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iceps.spring.shardingjdbc2.mapper.OrderMapper">
+
+
+	<resultMap id="BaseResultMap" type="com.iceps.spring.shardingjdbc2.model.Order">
+		<id column="order_id" property="orderId" jdbcType="VARCHAR" />
+		<result column="cust_id" property="custId" jdbcType="INTEGER" />
+		<result column="prod_id" property="prodId" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="amount" property="amount" jdbcType="DECIMAL" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="sharding_key" property="shardingKey" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		order_id, cust_id, prod_id, user_id, amount, remark, sharding_key
+	</sql>
+	<insert id="insert" parameterType="com.iceps.spring.shardingjdbc2.model.User">
+		insert into t_order (order_id, cust_id, prod_id, user_id, amount, remark, sharding_key)
+		values (
+		#{orderId,jdbcType=VARCHAR},
+		#{custId,jdbcType=INTEGER},
+		#{prodId,jdbcType=INTEGER},
+		#{userId,jdbcType=INTEGER},
+		#{amount,jdbcType=DECIMAL},
+		#{remark,jdbcType=VARCHAR},
+		#{shardingKey,jdbcType=INTEGER}
+		)
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.iceps.spring.shardingjdbc2.model.User">
+		update t_order
+		set
+		cust_id   = #{custId,jdbcType=INTEGER},
+		prod_id   = #{prodId,jdbcType=INTEGER},
+		user_id   = #{userId,jdbcType=INTEGER},
+		amount    = #{amount,jdbcType=DECIMAL},
+		remark    = #{remark,jdbcType=VARCHAR},
+		sharding_key    = #{shardingKey,jdbcType=INTEGER}
+		where
+		order_id  = #{orderId,jdbcType=VARCHAR}
+	</update>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_order
+		where
+		order_id  = #{orderId,jdbcType=VARCHAR}
+	</delete>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_order
+		where
+		order_id  = #{orderId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_order
+	</select>
+	<select id="selectByUserId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_order
+		where
+		user_id = #{userId,jdbcType=INTEGER}
+	</select>
+</mapper>

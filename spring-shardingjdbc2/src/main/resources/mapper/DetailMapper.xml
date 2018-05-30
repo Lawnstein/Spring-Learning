@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iceps.spring.shardingjdbc2.mapper.DetailMapper">
+	<resultMap id="BaseResultMap" type="com.iceps.spring.shardingjdbc2.model.Detail">
+		<id column="order_id" property="orderId" jdbcType="VARCHAR" />
+		<result column="cust_id" property="custId" jdbcType="INTEGER" />
+		<result column="cust_name" property="custName" jdbcType="VARCHAR" />
+		<result column="prod_id" property="prodId" jdbcType="INTEGER" />
+		<result column="prod_name" property="prodName" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="amount" property="amount" jdbcType="DECIMAL" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="sharding_key" property="shardingKey" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		a.order_id, a.cust_id, b.cust_name, a.prod_id, c.prod_name, a.user_id, d.user_name, a.amount, a.remark, a.sharding_key  
+	</sql>
+	<select id="backup" resultMap="BaseResultMap">
+		select		
+		<include refid="Base_Column_List" />
+		from t_order
+		where 1 = 1
+		<![CDATA[
+		and a.order_id like '%2'
+		and a.order_id in ('32024140','105107021','70660852','19979788')
+		and a.order_id >= '32024140' and a.order_id <= '35024140'
+		order by a.order_id
+		]]>
+	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+		select	
+		<include refid="Base_Column_List" />
+		from t_order a, t_cust b, t_product c, t_user d
+		where
+		<![CDATA[
+			a.cust_id = b.cust_id
+		and a.prod_id = c.prod_id
+		and a.user_id = d.user_id
+		and a.order_id in ('32024140','105107021','70660852','19979788')
+		order by a.order_id
+		]]>
+	</select>
+	<select id="selectAllOrderBy" resultMap="BaseResultMap">
+		select	
+		<include refid="Base_Column_List" />
+		from t_order a, t_cust b, t_product c, t_user d
+		where
+			a.cust_id = b.cust_id
+		and a.prod_id = c.prod_id
+		and a.user_id = d.user_id
+		order by order_id
+	</select>
+	<select id="selectAllLike" resultMap="BaseResultMap">
+		select	
+		<include refid="Base_Column_List" />
+		from t_order a, t_cust b, t_product c, t_user d
+		where
+			a.cust_id = b.cust_id
+		and a.prod_id = c.prod_id
+		and a.user_id = d.user_id
+		and a.order_id like '%2'
+	</select>
+	<select id="selectByUserId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_order a, t_cust b, t_product c, t_user d
+		where
+			a.cust_id = b.cust_id
+		and a.prod_id = c.prod_id
+		and a.user_id = d.user_id
+		and a.user_id = #{userId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectByCustId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_order a, t_cust b, t_product c, t_user d
+		where
+			a.cust_id = b.cust_id
+		and a.prod_id = c.prod_id
+		and a.user_id = d.user_id
+		and a.cust_id = #{custId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectByProdId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_order a, t_cust b, t_product c, t_user d
+		where
+			a.cust_id = b.cust_id
+		and a.prod_id = c.prod_id
+		and a.user_id = d.user_id
+		and a.prod_id = #{prodId,jdbcType=INTEGER}
+	</select>
+		
+	<update id="updateOrderByProdId" parameterType="Map">
+		update t_order
+		set
+			remark = #{remark,jdbcType=VARCHAR}
+		where
+			prod_id = #{prodId,jdbcType=INTEGER}
+	</update>
+</mapper>
