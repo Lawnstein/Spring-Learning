@@ -15,4 +15,5 @@ public interface CustMapper {
 	Cust selectByPrimaryKey(Integer custId);
 
 	List<Cust> selectAll();
+	
 }
