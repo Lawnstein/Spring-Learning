@@ -29,4 +29,12 @@ public interface OrderService {
 	List<Order> selectUnion();
 
 	List<Order> selectByUserId(Integer userId);
+	
+	int selectCountByUserId(Integer userId);
+	
+	int selectMaxByUserId(Integer userId);
+	
+	int selectMinByUserId(Integer userId);
+
+	int selectSumByUserId(Integer userId);
 }

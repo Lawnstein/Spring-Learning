@@ -37,7 +37,7 @@ public class Application {
 		// testFindCust();
 		// testSale();
 		testFindOrders();
-//		testFindDetails();
+		// testFindDetails();
 	}
 
 	public static void testAddUser() {
@@ -134,7 +134,11 @@ public class Application {
 		System.out.println("orderService.selectByUserId.size=" + rows.size());
 		for (Order o : rows)
 			System.out.println("orderService.selectByUserId.record=" + o);
-		
+
+		System.out.println("orderService.selectCountByUserId=" + orderService.selectCountByUserId(2));
+		System.out.println("orderService.selectMaxByUserId=" + orderService.selectMaxByUserId(2));
+		System.out.println("orderService.selectMinByUserId=" + orderService.selectMinByUserId(2));
+
 	}
 
 	public static void testFindDetails() {

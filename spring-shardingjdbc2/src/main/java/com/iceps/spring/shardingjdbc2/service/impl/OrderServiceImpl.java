@@ -46,7 +46,12 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public List<Order> selectByUserId(Integer userId) {
-		return orderMapper.selectByUserId(userId);
+		try {
+			return orderMapper.selectByUserId(userId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return EMPTY_LIST;
 	}
 
 	@Override
@@ -111,7 +116,32 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public List<Order> selectUnion() {
-		return orderMapper.selectUnion();
+		try {
+			return orderMapper.selectUnion();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return EMPTY_LIST;
+	}
+
+	@Override
+	public int selectCountByUserId(Integer userId) {
+		return orderMapper.selectCountByUserId(userId);
+	}
+
+	@Override
+	public int selectMaxByUserId(Integer userId) {
+		return orderMapper.selectMaxByUserId(userId);
+	}
+
+	@Override
+	public int selectMinByUserId(Integer userId) {
+		return orderMapper.selectMinByUserId(userId);
+	}
+
+	@Override
+	public int selectSumByUserId(Integer userId) {
+		return orderMapper.selectSumByUserId(userId);
 	}
 
 }

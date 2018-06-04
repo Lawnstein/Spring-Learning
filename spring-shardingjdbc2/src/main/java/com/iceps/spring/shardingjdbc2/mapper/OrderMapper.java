@@ -32,4 +32,12 @@ public interface OrderMapper {
 
 	List<Order> selectByUserId(Integer userId);
 
+	int selectCountByUserId(Integer userId);
+
+	int selectMaxByUserId(Integer userId);
+
+	int selectMinByUserId(Integer userId);
+
+	int selectSumByUserId(Integer userId);
+	
 }
