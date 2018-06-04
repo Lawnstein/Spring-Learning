@@ -1,18 +1,19 @@
-package com.iceps.spring.shardingjdbc2.mapper;
-
-import com.iceps.spring.shardingjdbc2.model.Detail;
+package com.iceps.spring.shardingjdbc1.service;
 
 import java.util.List;
-import java.util.Map;
 
-public interface DetailMapper {
+import com.iceps.spring.shardingjdbc1.model.Detail;
 
-	Detail selectDetail(String orderId);
-	
-	List<Detail> selectAll();
+public interface DetailService {
 
-	List<Detail> selectAllOr();
-	
+    Detail selectDetail(String orderId);
+    
+    List<Detail> selectAll();
+    
+    List<Detail> selectAll(int pageNum, int pageSize);
+
+    List<Detail> selectAllOr();
+    
 	List<Detail> selectAllOrderBy();
 	
 	List<Detail> selectAllLike();
@@ -30,7 +31,6 @@ public interface DetailMapper {
 	List<Detail> selectByCustId(Integer custId);
 	
 	List<Detail> selectByProdId(Integer prodId);
-	
-	int updateOrderByProdId(Map map);
-	
+
+	int updateOrderByProdId(Integer prodId, String remark);
 }

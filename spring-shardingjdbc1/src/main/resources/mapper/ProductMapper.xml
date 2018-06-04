@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iceps.spring.shardingjdbc1.mapper.ProductMapper">
+	<resultMap id="BaseResultMap" type="com.iceps.spring.shardingjdbc1.model.Product">
+		<id column="prod_id" property="prodId" jdbcType="INTEGER" />
+		<result column="prod_name" property="prodName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		prod_id, prod_name
+	</sql>
+	<insert id="insert" parameterType="com.iceps.spring.shardingjdbc1.model.User">
+		insert into t_product (prod_id, prod_name)
+		values (
+		#{prodId,jdbcType=INTEGER},
+		#{prodName,jdbcType=VARCHAR}
+		)
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.iceps.spring.shardingjdbc1.model.User">
+		update t_product
+		set
+		prod_name = #{prodName,jdbcType=VARCHAR}
+		where
+		prod_id = #{prodId,jdbcType=INTEGER}
+	</update>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_product
+		where
+		prod_id = #{prodId,jdbcType=INTEGER}
+	</delete>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_product
+		where
+		prod_id = #{prodId,jdbcType=INTEGER}
+	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_product
+	</select>
+</mapper>

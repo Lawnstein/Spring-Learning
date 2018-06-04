@@ -40,9 +40,9 @@
 		<outputType>RingBuffer</outputType>
 		<rollingPolicy
 			class="ch.qos.logback.assemble.rolling.NamingAndSizeBasedRollingPolicy">
-			<fileNamePattern>${loging.path}/assemble_ring/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.%i.log.zip</fileNamePattern>
-			<maxFileSize>5MB</maxFileSize>
-			<maxHistory>100</maxHistory>
+			<fileNamePattern>${loging.path}/assemble_ring/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log.%i.zip</fileNamePattern>
+			<maxFileSize>2MB</maxFileSize>
+			<!-- <maxHistory>100</maxHistory> -->
 		</rollingPolicy>
 		<encoder>
 			<pattern>[%date][%thread][%-5level][%file,%method:%line] %msg%n</pattern>

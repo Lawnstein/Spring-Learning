@@ -1,4 +1,4 @@
-package com.iceps.spring.shardingjdbc2.service.impl;
+package com.iceps.spring.shardingjdbc1.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
-import com.iceps.spring.shardingjdbc2.mapper.OrderMapper;
-import com.iceps.spring.shardingjdbc2.model.Order;
-import com.iceps.spring.shardingjdbc2.service.OrderService;
+import com.iceps.spring.shardingjdbc1.mapper.OrderMapper;
+import com.iceps.spring.shardingjdbc1.model.Order;
+import com.iceps.spring.shardingjdbc1.service.OrderService;
 
 @Service
 public class OrderServiceImpl implements OrderService {

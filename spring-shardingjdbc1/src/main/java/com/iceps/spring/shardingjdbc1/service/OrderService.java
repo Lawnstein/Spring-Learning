@@ -1,8 +1,8 @@
-package com.iceps.spring.shardingjdbc2.service;
-
-import com.iceps.spring.shardingjdbc2.model.Order;
+package com.iceps.spring.shardingjdbc1.service;
 
 import java.util.List;
+
+import com.iceps.spring.shardingjdbc1.model.Order;
 
 public interface OrderService {
 

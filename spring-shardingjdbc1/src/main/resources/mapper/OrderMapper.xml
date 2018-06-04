@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.iceps.spring.shardingjdbc2.mapper.OrderMapper">
+<mapper namespace="com.iceps.spring.shardingjdbc1.mapper.OrderMapper">
 
 
-	<resultMap id="BaseResultMap" type="com.iceps.spring.shardingjdbc2.model.Order">
+	<resultMap id="BaseResultMap" type="com.iceps.spring.shardingjdbc1.model.Order">
 		<id column="order_id" property="orderId" jdbcType="VARCHAR" />
 		<result column="cust_id" property="custId" jdbcType="INTEGER" />
 		<result column="prod_id" property="prodId" jdbcType="INTEGER" />
@@ -15,7 +15,7 @@
 	<sql id="Base_Column_List">
 		order_id, cust_id, prod_id, user_id, amount, remark, sharding_key
 	</sql>
-	<insert id="insert" parameterType="com.iceps.spring.shardingjdbc2.model.User">
+	<insert id="insert" parameterType="com.iceps.spring.shardingjdbc1.model.User">
 		insert into t_order (order_id, cust_id, prod_id, user_id, amount, remark, sharding_key)
 		values (
 		#{orderId,jdbcType=VARCHAR},
@@ -27,7 +27,7 @@
 		#{shardingKey,jdbcType=INTEGER}
 		)
 	</insert>
-	<update id="updateByPrimaryKey" parameterType="com.iceps.spring.shardingjdbc2.model.User">
+	<update id="updateByPrimaryKey" parameterType="com.iceps.spring.shardingjdbc1.model.User">
 		update t_order
 		set
 		cust_id   = #{custId,jdbcType=INTEGER},

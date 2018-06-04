@@ -1,8 +1,8 @@
-package com.iceps.spring.shardingjdbc2.mapper;
+package com.iceps.spring.shardingjdbc1.mapper;
 
 import java.util.List;
 
-import com.iceps.spring.shardingjdbc2.model.Order;
+import com.iceps.spring.shardingjdbc1.model.Order;
 
 public interface OrderMapper {
 

@@ -1,4 +1,4 @@
-package com.iceps.spring.shardingjdbc2.service.impl;
+package com.iceps.spring.shardingjdbc1.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
-import com.iceps.spring.shardingjdbc2.mapper.DetailMapper;
-import com.iceps.spring.shardingjdbc2.model.Detail;
-import com.iceps.spring.shardingjdbc2.service.DetailService;
+import com.iceps.spring.shardingjdbc1.mapper.DetailMapper;
+import com.iceps.spring.shardingjdbc1.model.Detail;
+import com.iceps.spring.shardingjdbc1.service.DetailService;
 
 @Service
 public class DetailServiceImpl implements DetailService {

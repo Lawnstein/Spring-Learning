@@ -1,4 +1,4 @@
-package com.iceps.spring.shardingjdbc2;
+package com.iceps.spring.shardingjdbc1;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -12,16 +12,16 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportResource;
 
-import com.iceps.spring.shardingjdbc2.model.Cust;
-import com.iceps.spring.shardingjdbc2.model.Detail;
-import com.iceps.spring.shardingjdbc2.model.Order;
-import com.iceps.spring.shardingjdbc2.model.Product;
-import com.iceps.spring.shardingjdbc2.model.User;
-import com.iceps.spring.shardingjdbc2.service.CustService;
-import com.iceps.spring.shardingjdbc2.service.DetailService;
-import com.iceps.spring.shardingjdbc2.service.OrderService;
-import com.iceps.spring.shardingjdbc2.service.ProductService;
-import com.iceps.spring.shardingjdbc2.service.UserService;
+import com.iceps.spring.shardingjdbc1.model.Cust;
+import com.iceps.spring.shardingjdbc1.model.Detail;
+import com.iceps.spring.shardingjdbc1.model.Order;
+import com.iceps.spring.shardingjdbc1.model.Product;
+import com.iceps.spring.shardingjdbc1.model.User;
+import com.iceps.spring.shardingjdbc1.service.CustService;
+import com.iceps.spring.shardingjdbc1.service.DetailService;
+import com.iceps.spring.shardingjdbc1.service.OrderService;
+import com.iceps.spring.shardingjdbc1.service.ProductService;
+import com.iceps.spring.shardingjdbc1.service.UserService;
 
 @SpringBootApplication
 @EnableCaching
@@ -36,8 +36,8 @@ public class Application {
 		// testAddCust();
 		// testFindCust();
 		// testSale();
-		testFindOrders();
-//		testFindDetails();
+//		testFindOrders();
+		testFindDetails();
 	}
 
 	public static void testAddUser() {

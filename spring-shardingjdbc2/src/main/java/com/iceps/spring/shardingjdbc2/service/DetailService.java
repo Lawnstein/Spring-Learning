@@ -12,6 +12,20 @@ public interface DetailService {
     
     List<Detail> selectAll(int pageNum, int pageSize);
 
+    List<Detail> selectAllOr();
+    
+	List<Detail> selectAllOrderBy();
+	
+	List<Detail> selectAllLike();
+	
+	List<Detail> selectAllIn();
+	
+	List<Detail> selectAllRange();
+	
+	List<Detail> selectDistinct();
+	
+	List<Detail> selectUnion();
+
 	List<Detail> selectByUserId(Integer userId);
 	
 	List<Detail> selectByCustId(Integer custId);

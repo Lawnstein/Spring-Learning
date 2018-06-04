@@ -1,9 +1,9 @@
-package com.iceps.spring.shardingjdbc2.mapper;
-
-import com.iceps.spring.shardingjdbc2.model.Detail;
+package com.iceps.spring.shardingjdbc1.mapper;
 
 import java.util.List;
 import java.util.Map;
+
+import com.iceps.spring.shardingjdbc1.model.Detail;
 
 public interface DetailMapper {
 
