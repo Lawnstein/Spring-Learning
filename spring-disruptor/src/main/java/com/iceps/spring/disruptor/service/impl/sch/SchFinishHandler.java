@@ -8,7 +8,7 @@ import com.iceps.spring.disruptor.constant.EventObject;
 import com.iceps.spring.disruptor.constant.EventType;
 import com.iceps.spring.disruptor.service.EventHandler;
 
-@Service
+@Service(value="schFinishHandler")
 public class SchFinishHandler<Map> implements EventHandler<Map> {
 	private static final Logger logger = LoggerFactory.getLogger(SchFinishHandler.class);
 

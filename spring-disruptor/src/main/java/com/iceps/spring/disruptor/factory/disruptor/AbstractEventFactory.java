@@ -1,4 +1,4 @@
-package com.iceps.spring.disruptor.factory;
+package com.iceps.spring.disruptor.factory.disruptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,10 +23,13 @@ import org.springframework.util.Assert;
 
 import com.iceps.spring.disruptor.constant.EventObject;
 import com.iceps.spring.disruptor.constant.EventType;
+import com.iceps.spring.disruptor.factory.NamedThreadFactory;
 import com.iceps.spring.disruptor.service.EventHandler;
 import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.WaitStrategy;
 import com.lmax.disruptor.WorkerPool;
+import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.ProducerType;
 
 /**
@@ -39,6 +42,11 @@ public abstract class AbstractEventFactory implements ApplicationContextAware, I
 	private static final Logger logger = LoggerFactory.getLogger(AbstractEventFactory.class);
 
 	protected ApplicationContext applicationContext;
+
+	/**
+	 * 高性能调度模式.
+	 */
+	protected boolean highPerfMode = false;
 
 	/**
 	 * 默认事件池大小.
@@ -71,7 +79,7 @@ public abstract class AbstractEventFactory implements ApplicationContextAware, I
 	protected Map<EventType, EventHandler> eventHandlers;
 
 	/**
-	 * 调度器
+	 * 调度: 异步调度器
 	 */
 	protected Map<String, RingBuffer<EventObject>> eventDisruptors;
 
@@ -79,12 +87,14 @@ public abstract class AbstractEventFactory implements ApplicationContextAware, I
 
 	protected Map<String, WorkerPool> eventWorkerPools;
 
+	protected InnerEventProducer singleEventProducer;
+
 	protected List<InnerEventProducer> eventProducers;
 
 	protected AtomicInteger eventProduceri;
 
 	protected final static int DEFAULT_PRODUCERSIZE = DEFAULT_THREADPOOLSIZE;
-	
+
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
@@ -158,15 +168,6 @@ public abstract class AbstractEventFactory implements ApplicationContextAware, I
 			ExecutorService es = initializeExecutor(e.getKey(), corePoolSize, maxPoolSize, 10 * 60);
 			eventExecutors.put(e.getKey(), es);
 
-			///////////////////////////////////////////////////////////////////
-			// Disruptor<EventObject> disruptor = new
-			// Disruptor<EventObject>(EventObject::new, ringBufferSize, es,
-			// ProducerType.MULTI, new BlockingWaitStrategy());
-			// disruptor.handleEventsWith(this);
-			// eventDisruptors.put(e.getKey(), disruptor);
-			// disruptor.start();
-
-			// 创建ringBuffer
 			/**
 			 * BlockingWaitStrategy
 			 * 是最低效的策略，但其对CPU的消耗最小并且在各种不同部署环境中能提供更加一致的性能表现.<br>
@@ -175,13 +176,19 @@ public abstract class AbstractEventFactory implements ApplicationContextAware, I
 			 * YieldingWaitStrategy
 			 * 的性能是最好的，适合用于低延迟的系统。在要求极高性能且事件处理线数小于CPU逻辑核心数的场景中，推荐使用此策略；例如，CPU开启超线程的特性.<br>
 			 */
+			WaitStrategy waitStrategy = null;
+			if (highPerfMode) {
+				waitStrategy = new YieldingWaitStrategy();
+			} else {
+				waitStrategy = new BlockingWaitStrategy();
+			}
 			RingBuffer<EventObject> ringBuffer = RingBuffer.create(ProducerType.MULTI,
 					new com.lmax.disruptor.EventFactory<EventObject>() {
 						@Override
 						public EventObject newInstance() {
 							return new EventObject();
 						}
-					}, ringBufferSize, new BlockingWaitStrategy());
+					}, ringBufferSize, waitStrategy);
 			eventDisruptors.put(e.getKey(), ringBuffer);
 			InnerEventWorkHandler handlers[] = new InnerEventWorkHandler[corePoolSize];
 			for (int j = 0; j < corePoolSize; j++) {
@@ -199,19 +206,6 @@ public abstract class AbstractEventFactory implements ApplicationContextAware, I
 			eventWorkerPools.put(e.getKey(), workerPool);
 			ringBuffer.addGatingSequences(workerPool.getWorkerSequences());
 			workerPool.start(es);
-
-			///////////////////////////////////////////////////////////////////
-			// Disruptor<EventObject> disruptor = new
-			// Disruptor<EventObject>(EventObject::new, ringBufferSize,
-			// new NamedThreadFactory(e.getKey()));
-			// disruptor.handleEventsWith(new EventFactory<EventObject>() {
-			// @Override
-			// public EventObject newInstance() {
-			// return new EventObject();
-			// }
-			// }));
-			// eventDisruptors.put(e.getKey(), disruptor);
-			// disruptor.start();
 
 			logger.info("Disruptor {} started: ringBufferSize {}, coreThreadPoolSize {}, maxThreadPoolSize {}",
 					e.getKey(), ringBufferSize, corePoolSize, maxPoolSize);
@@ -239,20 +233,32 @@ public abstract class AbstractEventFactory implements ApplicationContextAware, I
 	}
 
 	protected void fireEvent(EventType eventType, Object eventArgs) {
-		if (eventProducers == null) {
+		if (singleEventProducer == null) {
 			synchronized (eventDisruptors) {
-				if (eventProducers == null) {
-					eventProduceri = new AtomicInteger(0);
-					eventProducers = new ArrayList<InnerEventProducer>(DEFAULT_PRODUCERSIZE);
-					for (int i = 0; i < DEFAULT_PRODUCERSIZE; i++) {
-						eventProducers.add(new InnerEventProducer(this));
-					}
+				if (singleEventProducer == null) {
+					singleEventProducer = new InnerEventProducer(this);
 				}
-				
 			}
 		}
-		int p = eventProduceri.getAndIncrement();
-		eventProducers.get(p % DEFAULT_PRODUCERSIZE).onData(eventType, eventArgs);
+		singleEventProducer.onData(eventType, eventArgs);
+
+		//
+		// if (eventProducers == null) {
+		// synchronized (eventDisruptors) {
+		// if (eventProducers == null) {
+		// eventProduceri = new AtomicInteger(0);
+		// eventProducers = new
+		// ArrayList<InnerEventProducer>(DEFAULT_PRODUCERSIZE);
+		// for (int i = 0; i < DEFAULT_PRODUCERSIZE; i++) {
+		// eventProducers.add(new InnerEventProducer(this));
+		// }
+		// }
+		// }
+		// }
+		// int p = eventProduceri.getAndIncrement();
+		// eventProducers.get(p % DEFAULT_PRODUCERSIZE).onData(eventType,
+		// eventArgs);
+		//
 	}
 
 	protected ExecutorService initializeExecutor(String threadNamePrefix, int corePoolSize, int maxPoolSize,
@@ -265,7 +271,7 @@ public abstract class AbstractEventFactory implements ApplicationContextAware, I
 				new LinkedBlockingQueue<Runnable>(), new NamedThreadFactory(threadNamePrefix), new AbortPolicy());
 	}
 
-	static class InnerEventExceptionHandler implements com.lmax.disruptor.ExceptionHandler {
+	public static class InnerEventExceptionHandler implements com.lmax.disruptor.ExceptionHandler {
 		public void handleEventException(Throwable ex, long sequence, Object event) {
 			logger.error("caught EventException {}, sequence {}, event {}.", ex, sequence, event);
 		}
@@ -279,7 +285,7 @@ public abstract class AbstractEventFactory implements ApplicationContextAware, I
 		}
 	}
 
-	static class InnerEventHandler implements com.lmax.disruptor.EventHandler<EventObject> {
+	public static class InnerEventHandler implements com.lmax.disruptor.EventHandler<EventObject> {
 		private AbstractEventFactory factory;
 
 		public InnerEventHandler(AbstractEventFactory abstractEventFactory) {
@@ -304,7 +310,7 @@ public abstract class AbstractEventFactory implements ApplicationContextAware, I
 		}
 	}
 
-	static class InnerEventWorkHandler implements com.lmax.disruptor.WorkHandler<EventObject> {
+	public static class InnerEventWorkHandler implements com.lmax.disruptor.WorkHandler<EventObject> {
 		private AbstractEventFactory factory;
 
 		public InnerEventWorkHandler(AbstractEventFactory abstractEventFactory) {
@@ -328,7 +334,7 @@ public abstract class AbstractEventFactory implements ApplicationContextAware, I
 		}
 	}
 
-	static class InnerEventProducer {
+	public static class InnerEventProducer {
 		private AbstractEventFactory factory;
 
 		public InnerEventProducer(AbstractEventFactory abstractEventFactory) {

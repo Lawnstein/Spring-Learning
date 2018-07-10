@@ -1,10 +1,11 @@
-package com.iceps.spring.disruptor.factory;
+package com.iceps.spring.disruptor.factory.quartz;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
@@ -16,19 +17,19 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.Trigger;
+import org.quartz.SchedulerFactory;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
-import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.Assert;
 
+import com.iceps.spring.disruptor.lock.TaskletLock;
 import com.iceps.spring.disruptor.service.QuartzHandler;
-import com.iceps.spring.quartz.HelloScheduler.HelloJob;
 
 /**
  * 定时任务工厂.
@@ -36,10 +37,10 @@ import com.iceps.spring.quartz.HelloScheduler.HelloJob;
  * @author Lawnstein.Chan
  * @version $Revision:$
  */
-public class AbstractQuartzFactory implements ApplicationContextAware, InitializingBean {
+public abstract class AbstractQuartzFactory implements ApplicationContextAware, InitializingBean {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractQuartzFactory.class);
 
-	protected final static StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
+	protected SchedulerFactory schedulerFactory;
 
 	protected ApplicationContext applicationContext;
 
@@ -78,6 +79,11 @@ public class AbstractQuartzFactory implements ApplicationContextAware, Initializ
 	protected Map<String, String> parameters;
 
 	/**
+	 * 配置项:任务锁
+	 */
+	protected TaskletLock taskletLock;
+
+	/**
 	 * 运行项:调度容器
 	 */
 	protected Scheduler scheduler;
@@ -106,6 +112,10 @@ public class AbstractQuartzFactory implements ApplicationContextAware, Initializ
 	 * 运行项:任务触发器
 	 */
 	protected Map<String, CronTrigger> jobTriggers;
+
+	protected boolean alived = false;
+
+	protected CountDownLatch countDownLatch;
 
 	public String getGroupName() {
 		return groupName;
@@ -170,19 +180,39 @@ public class AbstractQuartzFactory implements ApplicationContextAware, Initializ
 		this.parameters = parameters;
 	}
 
+	public TaskletLock getTaskletLock() {
+		return taskletLock;
+	}
+
+	public void setTaskletLock(TaskletLock taskletLock) {
+		this.taskletLock = taskletLock;
+	}
+
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	abstract public void afterPropertiesSet() throws Exception;
+
+	private SchedulerFactory getSchedulerFactory(String groupName) {
+		if (this.schedulerFactory == null) {
+			try {
+				this.schedulerFactory = new com.iceps.spring.disruptor.factory.quartz.StdSchedulerFactory(groupName);
+			} catch (SchedulerException e) {
+				logger.error("Create schedulerFactory SchedulerException," + e.getMessage(), e);
+				throw new RuntimeException("Create schedulerFactory " + groupName + " failed", e);
+			}
+		}
+		return this.schedulerFactory;
 	}
 
-	public void start() {
+	protected void doStart() {
 		if (scheduler == null) {
 			try {
-				scheduler = schedulerFactory.getScheduler(groupName);
+				scheduler = getSchedulerFactory(groupName).getScheduler();
+				logger.info("Created scheduler {}", scheduler);
 			} catch (SchedulerException e) {
 				logger.error("get Scheduler for {} SchedulerException.", groupName, e);
 				throw new RuntimeException("Get scheduler failed, " + e.getMessage(), e);
@@ -201,15 +231,21 @@ public class AbstractQuartzFactory implements ApplicationContextAware, Initializ
 				err++;
 				continue;
 			}
-
 		}
 		if (err > 0) {
-			logger.error("Start Scheduler {} got {} error(s).", groupName, err);
+			logger.error("Start Scheduler {} got {} configure error(s).", groupName, err);
 			throw new RuntimeException("Start Scheduler " + groupName + " got " + err + " error(s).");
+		}
+
+		try {
+			scheduler.start();
+		} catch (SchedulerException e) {
+			logger.error("Start Scheduler {} failed.", groupName, e);
+			throw new RuntimeException("Start Scheduler " + groupName + " failed", e);
 		}
 	}
 
-	public void stop() {
+	protected void doStop() {
 		try {
 			if (!scheduler.isShutdown()) {
 				scheduler.shutdown();
@@ -219,30 +255,30 @@ public class AbstractQuartzFactory implements ApplicationContextAware, Initializ
 		}
 	}
 
-	private void initConfig() {
+	protected void initConfig() {
 		if (cronExpressions == null) {
-			cronExpressions = new HashMap<String, String>();
+			cronExpressions = new ConcurrentHashMap<String, String>();
 		}
 		if (handlers == null) {
-			handlers = new HashMap<String, QuartzHandler>();
+			handlers = new ConcurrentHashMap<String, QuartzHandler>();
 		}
 		if (parameters == null) {
-			parameters = new HashMap<String, String>();
+			parameters = new ConcurrentHashMap<String, String>();
 		}
 		if (jobCronExpressions == null) {
-			jobCronExpressions = new HashMap<String, String>();
+			jobCronExpressions = new ConcurrentHashMap<String, String>();
 		}
 		if (jobParameters == null) {
-			jobParameters = new HashMap<String, String>();
+			jobParameters = new ConcurrentHashMap<String, String>();
 		}
 		if (jobDetails == null) {
-			jobDetails = new HashMap<String, JobDetail>();
+			jobDetails = new ConcurrentHashMap<String, JobDetail>();
 		}
 		if (jobTriggerKeys == null) {
-			jobTriggerKeys = new HashMap<String, TriggerKey>();
+			jobTriggerKeys = new ConcurrentHashMap<String, TriggerKey>();
 		}
 		if (jobTriggers == null) {
-			jobTriggers = new HashMap<String, CronTrigger>();
+			jobTriggers = new ConcurrentHashMap<String, CronTrigger>();
 		}
 	}
 
@@ -254,20 +290,23 @@ public class AbstractQuartzFactory implements ApplicationContextAware, Initializ
 		return o;
 	}
 
-	private boolean registerJob(String jobName, String jobCronExpression, String jobParameter) {
-		if (jobDetails.get(jobName) == null) {
+	protected synchronized boolean registerJob(String jobName, String jobCronExpression, String jobParameter) {
+		Assert.notNull(jobName, "jobName cannot be null");
+		Assert.notNull(jobCronExpression, "jobCronExpression cannot be null");
+		// if (jobCronExpression == null) {
+		// jobCronExpression = "";
+		// }
+		if (jobParameter == null) {
+			jobParameter = "";
+		}
 
+		if (jobDetails.get(jobName) == null) {
 			QuartzHandler handler = (QuartzHandler) getOrDefault(handlers, jobName, DEFAULT_JOB_NAME);
 			if (handler == null) {
 				logger.error("Invalid job {} config, no handler matched.", jobName);
 				return false;
 			}
-			if (jobCronExpression == null) {
-				jobCronExpression = "";
-			}
-			if (jobParameter == null) {
-				jobParameter = "";
-			}
+			globalHandlers.put(jobName, handler);
 
 			jobCronExpressions.put(jobName, jobCronExpression);
 			jobParameters.put(jobName, jobParameter);
@@ -275,8 +314,8 @@ public class AbstractQuartzFactory implements ApplicationContextAware, Initializ
 			JobDataMap dataMap = new JobDataMap(getPropertyKeyValues(jobParameter));
 			dataMap.put(KEY_GROUP_NAME, groupName);
 			dataMap.put(KEY_JOB_NAME, jobName);
-			JobDetail jobDetail = JobBuilder.newJob(InnerJob.class).withIdentity(jobName).usingJobData(dataMap)
-					.storeDurably(true).build();
+			JobDetail jobDetail = JobBuilder.newJob(InnerJob.class).withIdentity(jobName, groupName)
+					.usingJobData(dataMap).storeDurably(true).build();
 			jobDetails.put(jobName, jobDetail);
 			CronTrigger jobTrigger = TriggerBuilder.newTrigger().withIdentity(jobName, groupName)
 					.withSchedule(CronScheduleBuilder.cronSchedule(jobCronExpression)).build();
@@ -294,6 +333,7 @@ public class AbstractQuartzFactory implements ApplicationContextAware, Initializ
 			String orgJobParameter = jobParameters.get(jobName);
 			String orgJobCronExpression = jobCronExpressions.get(jobName);
 			if (orgJobParameter.equals(jobParameter) && orgJobCronExpression.equals(jobCronExpression)) {
+				logger.debug("The trigger {} got the same cron and parameter, ignore.", jobName);
 				return true;
 			}
 
@@ -336,12 +376,22 @@ public class AbstractQuartzFactory implements ApplicationContextAware, Initializ
 		return true;
 	}
 
-	private boolean removeJob(String jobName) {
+	protected boolean removeJob(String jobName) {
+		TriggerKey triggerKey = jobTriggerKeys.get(jobName);
+		if (triggerKey == null) {
+			return true;
+		}
 		try {
-			TriggerKey triggerKey = jobTriggerKeys.get(jobName);
 			scheduler.pauseTrigger(triggerKey);
 			scheduler.unscheduleJob(triggerKey);
 			scheduler.deleteJob(JobKey.jobKey(jobName, groupName));
+
+			jobTriggerKeys.remove(jobName);
+			jobCronExpressions.remove(jobName);
+			jobParameters.remove(jobName);
+			jobDetails.remove(jobName);
+			jobTriggers.remove(jobName);
+
 		} catch (SchedulerException e) {
 			logger.error("unscheduleJob {} SchedulerException.", jobName, e);
 			return false;
@@ -368,7 +418,7 @@ public class AbstractQuartzFactory implements ApplicationContextAware, Initializ
 				String n = p3[0].trim();
 				String v = p3[1].trim();
 				map.put(n, v);
-				logger.info("jobParameter " + n + "=[" + v + "]");
+				// logger.info("jobParameter " + n + "=[" + v + "]");
 			} else {
 				logger.error("不合法的参数格式:" + keyValuePairs + " (" + p2 + ")");
 			}
@@ -385,12 +435,52 @@ public class AbstractQuartzFactory implements ApplicationContextAware, Initializ
 		return null;
 	}
 
-	static class InnerJob implements org.quartz.Job {
+	public static class InnerJob implements org.quartz.Job {
 		@Override
 		public void execute(JobExecutionContext context) throws JobExecutionException {
 			JobDataMap dataMap = context.getJobDetail().getJobDataMap();
-			System.out.println("JobDataMap:" + dataMap);
+			if (logger.isInfoEnabled()) {
+				String s = "";
+				for (Entry e : dataMap.entrySet()) {
+					if (s.length() > 0)
+						s += ",";
+					s += e.getKey() + ":" + e.getValue() + " ";
+				}
+				logger.info("JobDataMap : {}", s);
+			}
 			globalHandlers.get(context.getJobDetail().getKey().getName()).handle(dataMap);
 		}
 	}
+
+	public void start() {
+		if (taskletLock != null) {
+			countDownLatch = new CountDownLatch(1);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					taskletLock.lock("QRTZ_" + groupName, new Runnable() {
+
+						@Override
+						public void run() {
+							doStart();
+							try {
+								countDownLatch.await();
+							} catch (InterruptedException e) {
+							}
+						}
+					});
+				}
+			}).start();
+		} else {
+			doStart();
+		}
+	}
+
+	public void stop() {
+		doStop();
+		if (taskletLock != null && countDownLatch != null) {
+			countDownLatch.countDown();
+		}
+	}
+
 }

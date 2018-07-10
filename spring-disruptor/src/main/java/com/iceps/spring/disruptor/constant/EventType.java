@@ -28,7 +28,7 @@ public enum EventType {
 	SCAN_TASK_UNDONE("scan", "任务异常扫描"),
 	SCAN_JOB_TIMEOUT("scan", "作业超时扫描"),
 	SCAN_TASK_TIMEOUT("scan", "任务超时扫描"),
-	SCAN_TASK_MISS("scan", "任务丢失扫描"),
+	SCAN_TASK_MISFIRE("scan", "任务丢失扫描"),
 
 	/**
 	 * 统计分析类.

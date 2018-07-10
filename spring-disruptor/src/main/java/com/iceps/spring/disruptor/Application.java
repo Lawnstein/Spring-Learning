@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportResource;
 
 import com.iceps.spring.disruptor.constant.EventType;
-import com.iceps.spring.disruptor.factory.BatchEventFactory;
+import com.iceps.spring.disruptor.factory.disruptor.BatchEventFactory;
 
 @SpringBootApplication
 @EnableCaching
@@ -22,7 +22,7 @@ public class Application {
 
 	public static void main(String[] args) {
 		applicationContext = SpringApplication.run(Application.class, args);
-		fireEvents();
+//		fireEvents();
 	}
 
 	public static void fireEvents() {

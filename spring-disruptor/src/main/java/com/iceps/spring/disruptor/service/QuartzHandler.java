@@ -9,7 +9,7 @@ import java.util.Map;
  * @author Lawnstein.Chan
  * @version $Revision:$
  */
-public interface QuartzHandler<T> {
+public interface QuartzHandler {
 
 	/**
 	 * 处理

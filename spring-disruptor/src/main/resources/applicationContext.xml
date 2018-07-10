@@ -8,14 +8,71 @@
 
 	<context:component-scan base-package="com.iceps.spring.disruptor" />
 
-	<bean id="eventFactory" class="com.iceps.spring.disruptor.factory.BatchEventFactory" init-method="start" destroy-method="stop">
+	<bean id="eventFactory"
+		class="com.iceps.spring.disruptor.factory.disruptor.BatchEventFactory"
+		init-method="start" destroy-method="stop">
 		<property name="coreThreadPoolSizes">
-		    <map>
-        		<entry key="sch" value="8" /> 
-        		<entry key="scan" value="3" /> 
-        		<entry key="static" value="2" />
-    		</map>
+			<map>
+				<entry key="sch" value="8" />
+				<entry key="scan" value="3" />
+				<entry key="static" value="2" />
+			</map>
 		</property>
+	</bean>
+	<bean id="jvmTaskletLockImpl" class="com.iceps.spring.disruptor.lock.JvmTaskletLockImpl" />
+	<bean id="scanQuartzFactory"
+		class="com.iceps.spring.disruptor.factory.quartz.SteadyQuartzFactory"
+		init-method="start" destroy-method="stop">
+		<property name="groupName" value="scanGroup" />
+		<property name="cronExpressions">
+			<map>
+				<entry key="scanJobTimeout" value="*/5 * * * * ?" />
+				<entry key="scanJobUndone" value="*/10 * * * * ?" />
+				<entry key="scanTaskMisfire" value="*/15 * * * * ?" />
+				<entry key="scanTaskTimeout" value="*/20 * * * * ?" />
+				<entry key="scanTaskUndone" value="*/25 * * * * ?" />
+			</map>
+		</property>
+		<property name="handlers">
+			<map>
+				<entry key="*" value-ref="emptyHandler" />
+			</map>
+		</property>
+		<property name="parameters">
+			<map>
+				<entry key="scanJobTimeout" value="procTimeout=90" />
+				<entry key="scanJobUndone" value="undoneTimeout=120" />
+				<entry key="scanTaskMisfire" value="misfireNumb=10" />
+				<entry key="scanTaskTimeout" value="taskTotalTimeout=30" />
+				<entry key="scanTaskUndone" value="taskUndoneTimeout=60" />
+				<entry key="*" value="k1=1,k2=d2,k3=de3,k4=def4" />
+			</map>
+		</property>
+		<property name="taskletLock" ref="jvmTaskletLockImpl" />
+	</bean>
+
+	<bean id="staticQuartzFactory"
+		class="com.iceps.spring.disruptor.factory.quartz.SteadyQuartzFactory"
+		init-method="start" destroy-method="stop">
+		<property name="groupName" value="staticGroup" />
+		<property name="cronExpressions">
+			<map>
+				<entry key="staticSysnoInfo" value="*/30 * * * * ?" />
+				<entry key="staticTaskEclapse" value="*/35 * * * * ?" />
+				<entry key="staticTaskInfo" value="*/40 * * * * ?" />
+			</map>
+		</property>
+		<property name="handlers">
+			<map>
+				<entry key="*" value-ref="emptyHandler" />
+			</map>
+		</property>
+		<property name="parameters">
+			<map>
+				<entry key="*" value="k1=default1,k2=default2,k3=default3,k4=default4" />
+			</map>
+		</property>
+		<property name="taskletLock" ref="jvmTaskletLockImpl" />
 	</bean>
 	
 </beans>

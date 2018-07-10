@@ -8,7 +8,7 @@ import com.iceps.spring.disruptor.constant.EventObject;
 import com.iceps.spring.disruptor.constant.EventType;
 import com.iceps.spring.disruptor.service.EventHandler;
 
-@Service
+@Service(value="schQueryHandler")
 public class SchQueryHandler<Map> implements EventHandler<Map> {
 	private static final Logger logger = LoggerFactory.getLogger(SchQueryHandler.class);
 

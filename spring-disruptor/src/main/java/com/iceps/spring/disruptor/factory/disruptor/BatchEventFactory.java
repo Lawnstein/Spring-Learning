@@ -1,4 +1,4 @@
-package com.iceps.spring.disruptor.factory;
+package com.iceps.spring.disruptor.factory.disruptor;
 
 import org.springframework.util.Assert;
 

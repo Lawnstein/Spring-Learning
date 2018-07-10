@@ -8,13 +8,13 @@ import com.iceps.spring.disruptor.constant.EventObject;
 import com.iceps.spring.disruptor.constant.EventType;
 import com.iceps.spring.disruptor.service.EventHandler;
 
-@Service
-public class ScanTaskMissHandler<Map> implements EventHandler<Map> {
-	private static final Logger logger = LoggerFactory.getLogger(ScanTaskMissHandler.class);
+@Service(value="scanTaskMisfireHandler")
+public class ScanTaskMisfireHandler<Map> implements EventHandler<Map> {
+	private static final Logger logger = LoggerFactory.getLogger(ScanTaskMisfireHandler.class);
 
 	@Override
 	public EventType getEventType() {
-		return EventType.SCAN_TASK_MISS;
+		return EventType.SCAN_TASK_MISFIRE;
 	}
 
 	@Override
