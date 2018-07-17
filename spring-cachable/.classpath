@@ -46,7 +46,7 @@
 	<classpathentry kind="var" path="M2_REPO/org/objenesis/objenesis/2.1/objenesis-2.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-library/1.3/hamcrest-library-1.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-test/4.2.4.RELEASE/spring-test-4.2.4.RELEASE.jar"/>
-	<classpathentry kind="var" path="M2_REPO/net/sf/ehcache/ehcache/2.10.4/ehcache-2.10.4.jar"/>
+	<classpathentry kind="var" path="M2_REPO/net/sf/ehcache/ehcache/2.10.4/ehcache-2.10.4.jar" sourcepath="SOURCE_ATTACHER/ehcache-2.10.4-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>

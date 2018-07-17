@@ -17,3 +17,14 @@
 /spring-netty-tcp/.classpath
 /spring-netty-tcp/.project
 /spring-netty-tcp/.springBeans
+/spring-assemble/.springBeans
+/spring-assemble/logs
+/spring-assemble/target
+/spring-assemble/.classpath
+/spring-assemble/.project
+/springbatch-remote-chunk/.project
+/springbatch-remote-chunk/.settings
+/springbatch-remote-chunk/target
+/springbatch-remote-chunk/.classpath
+/spring-redis/.springBeans
+/spring-redis/target
