@@ -6,26 +6,16 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
 
-	<bean id="assembleRing" class="com.iceps.spring.assemble.service.TestActionService">
-		<property name="loggerName" value="ASSEMBLE_RING" />
-		<property name="sift" value="false" />
-	</bean>
-	<bean id="assembleQueue" class="com.iceps.spring.assemble.service.TestActionService">
-		<property name="loggerName" value="ASSEMBLE_QUEUE" />
-		<property name="sift" value="false" />
-	</bean>
-	<bean id="sift" class="com.iceps.spring.assemble.service.TestActionService">
-		<property name="loggerName" value="SIFT" />
-		<property name="sift" value="true" />
+
+	<bean class="io.netty.tcp.server.TcpServer" init-method="start"
+		destroy-method="stop">
+		<property name="serviceHandler">
+			<bean class="com.iceps.spring.nettytcp.MapMesgHandler" />
+		</property>
+		<property name="daemon" value="false" />
+		<property name="shutdownGracefully" value="true" />
+		<property name="port" value="18088" />
 	</bean>
 
-	<bean id="poolExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-		<property name="corePoolSize" value="2" />
-		<property name="maxPoolSize" value="4" />
-		<property name="queueCapacity" value="4" />
-		<property name="threadNamePrefix" value="POOLTH-" />
-	</bean>
-	
-	
 
 </beans>

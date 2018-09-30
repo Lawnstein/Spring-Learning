@@ -56,41 +56,6 @@ public class TestActionService {
 		startThreads();
 	}
 
-	public void loggerContextReset() {
-
-		System.out.println("-=-=-= try Reset Logback loggerContext =-=-=- ");
-		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-		// 必须清空一下，否则之前加载的logger堆栈信息还保留着StatusPrinter.print会打印出之前的状态
-		loggerContext.getStatusManager().clear();
-		loggerContext.reset();
-
-		System.out.println("-=-=-=  Logback loggerContext , try to reload config =-=-=- ");
-		ContextInitializer ci = new ContextInitializer(loggerContext);
-		try {
-			ci.autoConfig();
-			System.out.println("-=-=-=  Logback loggerContext reload over =-=-=- ");
-		} catch (JoranException e) {
-			System.err.println("-=-=-= Reset Logback status Failed =-=-=- \n" + e);
-		}
-	}
-
-	public void startLoggerResetThreads() {
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-					}
-					loggerContextReset();
-				}
-				
-			}
-		}).start();
-		;
-	}
 
 	public void startThreads() {
 //		startLoggerResetThreads();

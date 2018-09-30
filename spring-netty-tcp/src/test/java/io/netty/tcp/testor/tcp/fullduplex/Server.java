@@ -24,7 +24,7 @@ public class Server {
 	// 分配给socket连接的id，用于区分不同的socket连接
 	private static int id = 0;
 	// 存储socket连接，发送消息的时候从这里取出对应的socket连接
-	private HashMap<Integer, ServerThread> socketList = new HashMap<>();
+	private HashMap<Integer, ServerThread> socketList = new HashMap<Integer, ServerThread>();
 	// 服务器对象，用于监听TCP端口
 	private ServerSocket server;
 
@@ -78,7 +78,7 @@ public class Server {
 	 * 时，这段代码会遍历Map中所有的连接对象，关闭并从Map中移除 java的集合类在遍历的过程中进行修改会抛出异常
 	 */
 	public void sendAll(String data) {
-		LinkedList<Integer> list = new LinkedList<>();
+		LinkedList<Integer> list = new LinkedList<Integer>();
 		Set<Map.Entry<Integer, ServerThread>> set = socketList.entrySet();
 		for (Map.Entry<Integer, ServerThread> entry : set) {
 			list.add(entry.getKey());

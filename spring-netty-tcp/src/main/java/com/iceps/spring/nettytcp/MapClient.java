@@ -4,7 +4,7 @@
  *
  * This program and the accompanying materials are under the terms of the Apache License Version 2.0.
  */
-package io.netty.tcp.testor.tcp.multi;
+package com.iceps.spring.nettytcp;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,18 +20,17 @@ import io.netty.tcp.client.NTcpClient;
  * @author Lawnstein.Chan
  * @version $Revision:$
  */
-public class MultiClient {
+public class MapClient {
 
-	protected final static Logger logger = LoggerFactory.getLogger(MultiClient.class);
+	protected final static Logger logger = LoggerFactory.getLogger(MapClient.class);
 
-	public MultiClient() {
+	public MapClient() {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
 		NTcpClient client = new NTcpClient();
 		client.setHost("127.0.0.1");
-		client.setPort(8000);
-//		client.setPort(18088);
+		client.setPort(18088);
 //		client.setReadTimeout(3);
 		Map req = new HashMap();
 		req.put("seq", 1L);
@@ -51,7 +50,7 @@ public class MultiClient {
 		logger.info("-----------------------------------------");
 		logger.info(responses + "");
 		logger.info("-----------------------------------------");
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 10000; i++) {
 			try {
 			responses = client.call(req);
 			logger.info("************************************************");

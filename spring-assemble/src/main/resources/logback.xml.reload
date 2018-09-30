@@ -26,9 +26,9 @@
 			<onMatch>ACCEPT</onMatch>
 			<onMismatch>DENY</onMismatch>
 		</filter>
-		<file>${loging.path}/ERROR</file>
+		<file>${loging.path}/2ERROR</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<fileNamePattern>${loging.path}/ERROR_%d{yyyyMMdd}_%i</fileNamePattern>
+			<fileNamePattern>${loging.path}/2ERROR_%d{yyyyMMdd}_%i</fileNamePattern>
 			<maxFileSize>100MB</maxFileSize>
 			<maxHistory>100</maxHistory>
 		</rollingPolicy>
@@ -40,11 +40,11 @@
 
 	<appender name="ASSEMBLE_RING_APPENDER" class="ch.qos.logback.assemble.AssembleAppender">
 		<defaultMDCProperties>TRCODE=X;THREADNO=0;userid=U;</defaultMDCProperties>
-		<file>${loging.path}/assemble_ring/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log</file>
+		<file>${loging.path}/assemble_ring/%d{yyyyMMdd}/2%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log</file>
 		<outputType>RingBuffer</outputType>
 		<rollingPolicy
 			class="ch.qos.logback.assemble.rolling.NamingAndSizeBasedRollingPolicy">
-			<fileNamePattern>${loging.path}/assemble_ring/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log.%i.zip</fileNamePattern>
+			<fileNamePattern>${loging.path}/assemble_ring/%d{yyyyMMdd}/2%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log.%i.zip</fileNamePattern>
 			<maxFileSize>2MB</maxFileSize>
 		</rollingPolicy>
 		<encoder>
@@ -53,11 +53,11 @@
 	</appender>
 	<appender name="ASSEMBLE_QUEUE_APPENDER" class="ch.qos.logback.assemble.AssembleAppender">
 		<defaultMDCProperties>TRCODE=X;THREADNO=0;userid=U;</defaultMDCProperties>
-		<file>${loging.path}/assemble_queue/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log</file>
+		<file>${loging.path}/assemble_queue/%d{yyyyMMdd}/2%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log</file>
 		<outputType>BlockQueue</outputType>
 		<rollingPolicy
 			class="ch.qos.logback.assemble.rolling.NamingAndSizeBasedRollingPolicy">
-			<fileNamePattern>${loging.path}/assemble_queue/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.%i.log.gz</fileNamePattern>
+			<fileNamePattern>${loging.path}/assemble_queue/%d{yyyyMMdd}/2%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.%i.log.gz</fileNamePattern>
 			<maxFileSize>10MB</maxFileSize>
 			<maxHistory>100</maxHistory>
 		</rollingPolicy>
@@ -103,9 +103,9 @@
 		</discriminator>
 		<sift>
 			<appender name="FILE-${TRCODE}" class="ch.qos.logback.core.rolling.RollingFileAppender">
-				<file>${loging.path}/sift/${TRCODE}.0.log</file>
+				<file>${loging.path}/sift/2${TRCODE}.0.log</file>
 				<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-					<fileNamePattern>${loging.path}/sift/${TRCODE}.%i.%d{yyyy-MM-dd}.log</fileNamePattern>
+					<fileNamePattern>${loging.path}/sift/2${TRCODE}.%i.%d{yyyy-MM-dd}.log</fileNamePattern>
 					<maxFileSize>10MB</maxFileSize>
 					<maxHistory>100</maxHistory>
 				</rollingPolicy>

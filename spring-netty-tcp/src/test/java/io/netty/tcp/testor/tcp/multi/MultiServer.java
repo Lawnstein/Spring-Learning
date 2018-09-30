@@ -27,6 +27,7 @@ public class MultiServer {
 		TcpServer server = new TcpServer();
 		server.setServiceHandler(new MultiServerHandler());
 		server.setPort(8000);
+		server.setDaemon(false);
 		server.start();
 	}
 

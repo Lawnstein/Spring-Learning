@@ -4,7 +4,7 @@
  *
  * This program and the accompanying materials are under the terms of the Apache License Version 2.0.
  */
-package io.netty.tcp.testor.tcp.multi;
+package com.iceps.spring.nettytcp;
 
 import java.util.Map;
 
@@ -17,12 +17,12 @@ import io.netty.tcp.server.ServiceAppHandler;
  * @author Lawnstein.Chan
  * @version $Revision:$
  */
-public class MultiServerHandler implements ServiceAppHandler {
+public class MapMesgHandler implements ServiceAppHandler {
 
 	/**
 	 * 
 	 */
-	public MultiServerHandler() {
+	public MapMesgHandler() {
 		// TODO 自动生成的构造函数存根
 	}
 
@@ -34,6 +34,7 @@ public class MultiServerHandler implements ServiceAppHandler {
 	public Object call(Object request, Channel channel) {
 		Map map = (Map) request;
 		map.put("ServerTimeStamp", System.currentTimeMillis());
+//		System.out.println(">" + map);
 		System.out.println(Thread.currentThread().getName() + " > " + map);
 		return map;
 	}
