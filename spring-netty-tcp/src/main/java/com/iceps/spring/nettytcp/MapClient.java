@@ -50,14 +50,14 @@ public class MapClient {
 		logger.info("-----------------------------------------");
 		logger.info(responses + "");
 		logger.info("-----------------------------------------");
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 100000; i++) {
 			try {
 			responses = client.call(req);
 			logger.info("************************************************");
 			} catch (Throwable th) {
 				th.printStackTrace();
 			}
-			Thread.sleep(2000);
+			Thread.sleep(200);
 		}
 		System.exit(0);
 	}

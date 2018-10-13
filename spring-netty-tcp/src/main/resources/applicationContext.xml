@@ -13,7 +13,7 @@
 			<bean class="com.iceps.spring.nettytcp.MapMesgHandler" />
 		</property>
 		<property name="daemon" value="false" />
-		<property name="shutdownGracefully" value="true" />
+		<property name="shutdownGracefully" value="false" />
 		<property name="port" value="18088" />
 	</bean>
 
