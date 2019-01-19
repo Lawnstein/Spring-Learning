@@ -35,7 +35,7 @@
 		</defaultMDCProperties>
 
 		<!-- <file>logs/assemble/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log</file> -->
-		<outputType>RingBuffer</outputType>
+		<!-- <outputType>RingBuffer</outputType> -->
 		<rollingPolicy
 			class="ch.qos.logback.assemble.rolling.NamingAndSizeBasedRollingPolicy">
 			<fileNamePattern>logs/assemble/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.%i.log</fileNamePattern>

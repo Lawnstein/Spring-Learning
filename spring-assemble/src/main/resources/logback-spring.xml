@@ -8,7 +8,7 @@
 	<property name="loging.level" value="TRACE" /> 
 	<property name="spring.application.name" value="test" /> 
 	
-	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+<!-- 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<filter class="ch.qos.logback.classic.filter.LevelFilter">
 			<level>ERROR</level>
 			<onMatch>ACCEPT</onMatch>
@@ -17,117 +17,29 @@
 		<encoder>
 			<pattern>[%date][%thread][%-5level][%file,%method:%line] %msg%n</pattern>
 		</encoder>
-	</appender>
+	</appender> -->
 	
-	<appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<append>true</append>
-		<filter class="ch.qos.logback.classic.filter.LevelFilter">
-			<level>ERROR</level>
-			<onMatch>ACCEPT</onMatch>
-			<onMismatch>DENY</onMismatch>
-		</filter>
-		<file>${loging.path}/ERROR</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<fileNamePattern>${loging.path}/ERROR_%d{yyyyMMdd}_%i</fileNamePattern>
-			<maxFileSize>100MB</maxFileSize>
-			<maxHistory>100</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<immediateFlush>true</immediateFlush>
-			<pattern>[%date{yyyy-MM-dd HH:mm:ss,SSS}][%-5level][%thread] %msg%n</pattern>
-		</encoder>
-	</appender>
-
-	<appender name="ASSEMBLE_RING_APPENDER" class="ch.qos.logback.assemble.AssembleAppender">
+	<appender name="ASSEMBLE_SYNC_APPENDER" class="ch.qos.logback.assemble.AssembleAppender">
 		<defaultMDCProperties>TRCODE=X;THREADNO=0;userid=U;</defaultMDCProperties>
-		<file>${loging.path}/assemble_ring/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log</file>
-		<outputType>RingBuffer</outputType>
+		<file>${loging.path}/assemble_sync/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log</file>
+		<!-- <async>true</async> -->
+		<includeCallerData>true</includeCallerData>
 		<rollingPolicy
 			class="ch.qos.logback.assemble.rolling.NamingAndSizeBasedRollingPolicy">
-			<fileNamePattern>${loging.path}/assemble_ring/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log.%i.zip</fileNamePattern>
+			<fileNamePattern>${loging.path}/assemble_sync/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log.%i.zip</fileNamePattern>
 			<maxFileSize>2MB</maxFileSize>
 		</rollingPolicy>
 		<encoder>
 			<pattern>[%date{yyyy-MM-dd HH:mm:ss,SSS}][%thread][%-5level][%file,%method:%line] %msg%n</pattern>
 		</encoder>
 	</appender>
-	<appender name="ASSEMBLE_QUEUE_APPENDER" class="ch.qos.logback.assemble.AssembleAppender">
-		<defaultMDCProperties>TRCODE=X;THREADNO=0;userid=U;</defaultMDCProperties>
-		<file>${loging.path}/assemble_queue/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.log</file>
-		<outputType>BlockQueue</outputType>
-		<rollingPolicy
-			class="ch.qos.logback.assemble.rolling.NamingAndSizeBasedRollingPolicy">
-			<fileNamePattern>${loging.path}/assemble_queue/%d{yyyyMMdd}/%X{TRCODE:-TRCODE}-%X{userid:-userid}-%X{THREADNO:-THREADNO}.%i.log.gz</fileNamePattern>
-			<maxFileSize>10MB</maxFileSize>
-			<maxHistory>100</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<pattern>[%date{yyyy-MM-dd HH:mm:ss,SSS}][%thread][%-5level][%file,%method:%line] %msg%n</pattern>
-		</encoder>
-	</appender>
 
-<!-- 
-	<appender name="ASSEMBLE_RING_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<append>true</append>
-		<file>${loging.path}/ASSEMBLE_RING</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<fileNamePattern>${loging.path}/ASSEMBLE_RING_%d{yyyyMMdd}_%i</fileNamePattern>
-			<maxFileSize>100MB</maxFileSize>
-			<maxHistory>100</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<immediateFlush>true</immediateFlush>
-			<pattern>[%date{yyyy-MM-dd HH:mm:ss,SSS}][%-5level][%thread] %msg%n</pattern>
-		</encoder>
-	</appender>
-	<appender name="ASSEMBLE_QUEUE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<append>true</append>
-		<file>${loging.path}/ASSEMBLE_QUEUE</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<fileNamePattern>${loging.path}/ASSEMBLE_QUEUE_%d{yyyyMMdd}_%i</fileNamePattern>
-			<maxFileSize>100MB</maxFileSize>
-			<maxHistory>100</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<immediateFlush>true</immediateFlush>
-			<pattern>[%date{yyyy-MM-dd HH:mm:ss,SSS}][%-5level][%thread] %msg%n</pattern>
-		</encoder>
-	</appender>
-	 -->
-	
-	
-	<appender name="SIFT_APPENDER" class="ch.qos.logback.classic.sift.SiftingAppender">
-		<discriminator>
-			<Key>TRCODE</Key>
-			<DefaultValue>X</DefaultValue>
-		</discriminator>
-		<sift>
-			<appender name="FILE-${TRCODE}" class="ch.qos.logback.core.rolling.RollingFileAppender">
-				<file>${loging.path}/sift/${TRCODE}.0.log</file>
-				<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-					<fileNamePattern>${loging.path}/sift/${TRCODE}.%i.%d{yyyy-MM-dd}.log</fileNamePattern>
-					<maxFileSize>10MB</maxFileSize>
-					<maxHistory>100</maxHistory>
-				</rollingPolicy>
-				<encoder>
-					<pattern>[%date{yyyy-MM-dd HH:mm:ss,SSS}][%thread][%-5level][%file,%method:%line] %msg%n</pattern>
-				</encoder>
-			</appender>
-		</sift>
-	</appender>
 
-	<logger name="ASSEMBLE_RING" level="trace" additivity="true">
-		<appender-ref ref="ASSEMBLE_RING_APPENDER" />
+	<logger name="ASSEMBLE_SYNC" level="trace" additivity="true">
+		<appender-ref ref="ASSEMBLE_SYNC_APPENDER" />
 	</logger>
-	<logger name="ASSEMBLE_QUEUE" level="trace" additivity="true">
-		<appender-ref ref="ASSEMBLE_QUEUE_APPENDER" />
-	</logger>
-	<logger name="SIFT" level="trace" additivity="true">
-		<appender-ref ref="SIFT_APPENDER" />
-	</logger>
-	<root level="TRACE">
+<!-- 	<root level="TRACE">
 		<appender-ref ref="CONSOLE" />
-		<appender-ref ref="ERROR" />
-	</root>
+	</root> -->
 
 </configuration>   

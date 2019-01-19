@@ -6,18 +6,18 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
 
-	<bean id="assembleRing" class="com.iceps.spring.assemble.service.TestActionService">
-		<property name="loggerName" value="ASSEMBLE_RING" />
+	<bean id="assembleSync" class="com.iceps.spring.assemble.service.TestActionService">
+		<property name="loggerName" value="ASSEMBLE_SYNC" />
 		<property name="sift" value="false" />
 	</bean>
-	<bean id="assembleQueue" class="com.iceps.spring.assemble.service.TestActionService">
+<!-- 	<bean id="assembleQueue" class="com.iceps.spring.assemble.service.TestActionService">
 		<property name="loggerName" value="ASSEMBLE_QUEUE" />
 		<property name="sift" value="false" />
 	</bean>
 	<bean id="sift" class="com.iceps.spring.assemble.service.TestActionService">
 		<property name="loggerName" value="SIFT" />
 		<property name="sift" value="true" />
-	</bean>
+	</bean> -->
 
 	<bean id="poolExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
 		<property name="corePoolSize" value="2" />

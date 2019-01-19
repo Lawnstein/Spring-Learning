@@ -25,12 +25,23 @@ import ch.qos.logback.core.util.StatusPrinter;
 public class Application {
 	private static ConfigurableApplicationContext applicationContext;
 
+	private static void testAssembleSync() {
+		com.iceps.spring.assemble.service.TestActionService service = (TestActionService) applicationContext
+				.getBean("assembleSync");
+		service.startThreads(false);
+	}
+
+	private static void testAssembleAsyn() {
+		com.iceps.spring.assemble.service.TestActionService service = (TestActionService) applicationContext
+				.getBean("assembleAsyn");
+		service.startThreads(false);
+	}
+	
 	private static void testAssembleRing() {
 		com.iceps.spring.assemble.service.TestActionService service = (TestActionService) applicationContext
 				.getBean("assembleRing");
 		service.startThreads(false);
 	}
-
 	private static void testAssembleQueue() {
 		com.iceps.spring.assemble.service.TestActionService service = (TestActionService) applicationContext
 				.getBean("assembleQueue");
@@ -142,14 +153,17 @@ public class Application {
 		System.out.println("0000000000000000000000000000000000>>>>>>>>>>>>>>>");
 		applicationContext = SpringApplication.run(Application.class, args);
 		System.out.println("1111111111111111111111111111111111>>>>>>>>>>>>>>>");
-		stop();
-		startLoggerResetThreads();
+//		stop();
+//		startLoggerResetThreads();
 		System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA>>>>>>>>>>>>>>>");
 		int l = 1;
 		for (int i = 0; i < l; i++) {
-			testAssembleRing();
-			testAssembleQueue();
-			testSift();
+			testAssembleSync();
+//			testAssembleAsync();
+			
+//			testAssembleRing();
+//			testAssembleQueue();
+//			testSift();
 		}
 	}
 
