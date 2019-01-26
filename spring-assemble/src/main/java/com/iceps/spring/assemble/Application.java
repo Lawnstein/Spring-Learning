@@ -1,6 +1,5 @@
 package com.iceps.spring.assemble;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -34,6 +33,12 @@ public class Application {
 	private static void testAssembleAsyn() {
 		com.iceps.spring.assemble.service.TestActionService service = (TestActionService) applicationContext
 				.getBean("assembleAsyn");
+		service.startThreads(false);
+	}
+
+	private static void testAssembleAsynSized() {
+		com.iceps.spring.assemble.service.TestActionService service = (TestActionService) applicationContext
+				.getBean("assembleAsynSized");
 		service.startThreads(false);
 	}
 	
@@ -137,7 +142,7 @@ public class Application {
 			public void run() {
 				System.out.println("222222222222222222222222222222222>>>>>>>>>>>>>>>");
 				try {
-					Thread.sleep(30000);
+					Thread.sleep(600 * 1000);
 				} catch (InterruptedException e) {
 				}
 
@@ -153,17 +158,18 @@ public class Application {
 		System.out.println("0000000000000000000000000000000000>>>>>>>>>>>>>>>");
 		applicationContext = SpringApplication.run(Application.class, args);
 		System.out.println("1111111111111111111111111111111111>>>>>>>>>>>>>>>");
-//		stop();
+		stop();
 //		startLoggerResetThreads();
 		System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA>>>>>>>>>>>>>>>");
-		int l = 1;
+		int l = 10;
 		for (int i = 0; i < l; i++) {
 			testAssembleSync();
-//			testAssembleAsync();
+			testAssembleAsyn();
+//			testAssembleAsynSized();
 			
 //			testAssembleRing();
 //			testAssembleQueue();
-//			testSift();
+			testSift();
 		}
 	}
 

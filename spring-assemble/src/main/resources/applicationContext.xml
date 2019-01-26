@@ -10,13 +10,22 @@
 		<property name="loggerName" value="ASSEMBLE_SYNC" />
 		<property name="sift" value="false" />
 	</bean>
-<!-- 	<bean id="assembleQueue" class="com.iceps.spring.assemble.service.TestActionService">
-		<property name="loggerName" value="ASSEMBLE_QUEUE" />
+	<bean id="assembleAsyn" class="com.iceps.spring.assemble.service.TestActionService">
+		<property name="loggerName" value="ASSEMBLE_ASYN" />
 		<property name="sift" value="false" />
-	</bean>
+	</bean>	
+	<bean id="assembleAsynSized" class="com.iceps.spring.assemble.service.TestActionService">
+		<property name="loggerName" value="ASSEMBLE_ASYN_SIZED" />
+		<property name="sift" value="false" />
+	</bean>	
 	<bean id="sift" class="com.iceps.spring.assemble.service.TestActionService">
 		<property name="loggerName" value="SIFT" />
 		<property name="sift" value="true" />
+	</bean>
+	
+<!-- 	<bean id="assembleQueue" class="com.iceps.spring.assemble.service.TestActionService">
+		<property name="loggerName" value="ASSEMBLE_QUEUE" />
+		<property name="sift" value="false" />
 	</bean> -->
 
 	<bean id="poolExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">

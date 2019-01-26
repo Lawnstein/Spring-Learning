@@ -76,9 +76,8 @@ public abstract class BaseAction implements Runnable {
 	abstract public void pre();
 
 	private void initMDC() {
-		String threadName = Thread.currentThread().getName().replaceAll("-", " ").replaceAll("_", " ");
-		String[] threadAs = threadName.split("[ ]");
-		String threadNo = (threadAs != null && threadAs.length > 0) ? threadAs[threadAs.length - 1] : "0";
+		String[] threadAs = Thread.currentThread().getName().replaceAll("-", " ").replaceAll("_", " ").split("[ ]");
+		String threadNo = String.format("%06d", (threadAs != null && threadAs.length > 0) ? Integer.valueOf(threadAs[threadAs.length - 1]) : 0);
 		if (isMergmdc()) {
 			MDC.put("TRCODE", trcode + "_" + threadNo);
 		} else {
@@ -91,35 +90,39 @@ public abstract class BaseAction implements Runnable {
 	public void run() {
 		pre();
 		initMDC();
-		logger.info("{} {} run() start >>>>", this.getClass(), Thread.currentThread().getName());
-		logger.info("{} {} MDC:{}", this.getClass(), Thread.currentThread().getName(), MDC.getCopyOfContextMap());
+		// String[] threadAs = Thread.currentThread().getName().replaceAll("-",
+		// " ").replaceAll("_", " ").split("[ ]");
+		// String threadNo = String.format("%06d", (threadAs != null &&
+		// threadAs.length > 0) ? threadAs[threadAs.length - 1] : "0");
+		String threadName = String.format("-%10.10s %06d", Thread.currentThread().getName(), Thread.currentThread().getId());
+		logger.info("{} {} run() start >>>>", this.getClass(), threadName);
+		logger.info("{} {} MDC:{}", this.getClass(), threadName, MDC.getCopyOfContextMap());
 		Random r = new Random(System.currentTimeMillis());
 		if (loopA < 0)
 			loopA = r.nextInt(100);
-		logger.info("{}, ThreadID={}, first level, running for {} time(s).", Thread.currentThread().getName(),  Thread.currentThread().getId(), loopA);
+		logger.info("{} {} first level, running for {} time(s)...", this.getClass(), threadName, loopA);
 		for (int i = 0; i < loopA; i++) {
+			logger.info("{} {} first level, loop for {}/{} time(s)...", this.getClass(), threadName, i, loopA);
 
 			if (loopB < 0)
 				loopB = r.nextInt(20000);
-			logger.info("{}, ThreadID={}, second level, running for {} time(s).", Thread.currentThread().getName(), Thread.currentThread().getId(), loopB);
+			logger.info("{} {} second level, running for {} time(s)...", this.getClass(), threadName, loopB);
 			
 			for (int j0 = 0; j0 < loopB; j0++) {
 				logger.info("{} loop for ================{}/{}================= [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ {}/{} ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]",
-						Thread.currentThread().getId(), i, loopA, j0, loopB);
+						threadName, i, loopA, j0, loopB);
 			}
 
-			logger.info("{}, ThreadID={}, LoopA runed for {}/{} time(s).", Thread.currentThread().getName(), Thread.currentThread().getId(), i, loopA);
 
 			if (randomSleep) {
 				try {
 					Thread.sleep(r.nextInt(10000));
 				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 			}
 
 		}
-		logger.info("{} {} run() over <<<<",this.getClass(), Thread.currentThread().getName());
+		logger.info("{} {} run() over <<<<", this.getClass(), threadName);
 		if (countDownLatch != null)
 			countDownLatch.countDown();
 	}

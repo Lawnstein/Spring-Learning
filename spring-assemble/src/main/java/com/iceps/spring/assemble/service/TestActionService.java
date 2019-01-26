@@ -61,7 +61,7 @@ public class TestActionService {
 //		startLoggerResetThreads();
 		
 		int LOOPA = 10;
-		int LOOPB = 10000;
+		int LOOPB = 100000;
 		// int T15001N = 20;
 		// int T15002N = 15;
 		// int T15003N = 10;
