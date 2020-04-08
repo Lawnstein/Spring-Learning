@@ -1,0 +1,20 @@
+server:
+  port: 8761
+
+app:
+  id: pcbs.lns.dev
+  
+apollo:
+  meta: http://127.0.0.1:8080
+  bootstrap:
+    enabled: true
+    namespaces: application,pcbs.dev
+    eagerLoad:
+      enabled: true
+
+logging:
+  level:
+    com:
+      iceps:
+        spring:
+          controller: debug
